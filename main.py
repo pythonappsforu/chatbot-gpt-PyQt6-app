@@ -1,5 +1,5 @@
 import sys
-
+from backend import Chatbot
 from PyQt6.QtWidgets import QMainWindow,QApplication,QTextEdit,QLineEdit,QPushButton
 
 
@@ -18,6 +18,9 @@ os.environ['QT_QPA_PLATFORM_PLUGIN_PATH']=os.getenv('QT_QPA_PLATFORM_PLUGIN_PATH
 class ChatbotWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+
+        self.chatbot = Chatbot()
+
         self.setMinimumSize(800,600)
 
         #Add chat area widget
@@ -32,8 +35,18 @@ class ChatbotWindow(QMainWindow):
         # button send
         self.button = QPushButton('send',self)
         self.button.setGeometry(610,510,100,50)
+        self.button.clicked.connect(self.send_message)
 
         self.show()
+
+    def send_message(self):
+        user_input = self.input_field.text().strip()
+        self.chat_area.append(f"<p style='color:#333333'>me:{user_input}</p>")
+        self.input_field.clear()
+
+        response = self.chatbot.get_response(user_input)
+        self.chat_area.append(f"<p style='color: #333333;background-color: #E9E9E9'>bot:{response}</p>")
+        print("openai response recieved")
 
 
 app= QApplication(sys.argv)
