@@ -2,7 +2,7 @@ import sys
 from backend import Chatbot
 from PyQt6.QtWidgets import QMainWindow,QApplication,QTextEdit,QLineEdit,QPushButton
 
-
+import threading
 from dotenv import load_dotenv
 import os
 
@@ -31,6 +31,7 @@ class ChatbotWindow(QMainWindow):
         #input field widget
         self.input_field = QLineEdit(self)
         self.input_field.setGeometry(10,510,580,50)
+        self.input_field.returnPressed.connect(self.send_message)
 
         # button send
         self.button = QPushButton('send',self)
@@ -44,9 +45,13 @@ class ChatbotWindow(QMainWindow):
         self.chat_area.append(f"<p style='color:#333333'>me:{user_input}</p>")
         self.input_field.clear()
 
+        thread = threading.Thread(target=self.get_bot_response,args=(user_input,))
+        thread.start()
+
+    def get_bot_response(self,user_input):
         response = self.chatbot.get_response(user_input)
         self.chat_area.append(f"<p style='color: #333333;background-color: #E9E9E9'>bot:{response}</p>")
-        print("openai response recieved")
+        print("openai response received")
 
 
 app= QApplication(sys.argv)
